@@ -1,0 +1,88 @@
+---
+title	author	date	output
+Human Activity Recognition
+Markus Ganter
+5/19, 2015
+html document
+MLpredictionAssignment.html
+---
+
+#Human Activity Recognition
+
+#Introduction
+Using devices such as Jawbone Up, Nike FuelBand, and Fitbit it is now possible to collect a large amount of data about personal activity relatively inexpensively. These type of devices are part of the quantified self movement - a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, or because they are tech geeks. One thing that people regularly do is quantify how much of a particular activity they do, but they rarely quantify how well they do it. In this project, your goal will be to use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants. They were asked to perform barbell lifts correctly and incorrectly in 5 different ways. More information is available from the website here: http://groupware.les.inf.puc-rio.br/har (see the section on the Weight Lifting Exercise Dataset).
+
+
+#Data load
+
+Download the two CSV files and load them 
+
+```
+# read training csv 
+data_training <- read.csv("./sourcedata/pml-training.csv", na.strings= c("NA",""," "))
+# read testing csv
+data_test <- read.csv("./sourcedata/pml-testing.csv", na.strings= c("NA",""," "))
+```
+
+#Data preprocessing 
+
+```
+# remove NAs and identifier columns
+# training data
+data_training_no_NAs <- apply(data_training, 2, function(x) {sum(is.na(x))})
+data_training_cleaned <- data_training[,which(data_training_no_NAs == 0)]
+data_training_cleaned <- data_training_cleaned[8:length(data_training_cleaned)]
+# test data
+data_test_no_NAs <- apply(data_test, 2, function(x) {sum(is.na(x))})
+data_test_cleaned <- data_test[,which(data_test_no_NAs == 0)]
+data_test_cleaned <- data_test_clean[8:length(data_test_cleaned)]
+```
+
+#Model
+
+The test data set was split up into training and cross validation sets in a 70:30 ratio in order to train the model and then test it against data it was not specifically fitted to.
+
+```
+# splitting test data into training and cross validation
+inTraining <- createDataPartition(y = data_training_cleaned$classe, p = 0.7, list = FALSE)
+training <- data_training_cleaned[inTraining, ]
+crossvalidaton <- data_training_cleaned[-inTraining, ]
+
+# correlation plot was produced in order to see how strong the variables correlate with each other.
+correlationMatrix <- cor(training[, -length(training)])
+corrplot(correlationMatrix, order = "FPC", method = "circle", type = "lower", tl.cex = 0.8,  tl.col = rgb(0, 0, 0))
+The red and blue colors indicate a highly negative and positive relationship respectively between the variables. 
+Based on the outcome I decided to included all variables in the model.
+```
+
+Fitting the model
+
+```
+# fit a model to predict the classe
+model <- randomForest(classe ~ ., data = training)
+```
+
+This results in an OOB error rate of .56% which is quite good. 
+
+#Cross-validation
+
+Use model to classify the remaining 30% of data. The results were placed in a confusion matrix with the actual classifications to determine the accuracy of the model.
+
+```
+predictCrossValidation <- predict(model, crossvalidation)
+confusionMatrix(crossvalidation$classe, predictCrossValidation)
+```
+The result is a 99.3% prediction accuracy. 
+
+#Predictions
+
+Use the model to predict the classifications of the 20 test cases in the test data loaded above. 
+
+# predict the classes of the test set
+```
+predictTest <- predict(model, data_test_cleaned)
+```
+
+#Conclusions
+
+Using the data to create a robust model it is possible to predict how well an individual preforming various exercises.
