@@ -1,10 +1,8 @@
----
-title	author	date	output
-Human Activity Recognition
-Markus Ganter
-5/19, 2015
-html document
-MLpredictionAssignment.html
+---			
+title: Human Activity Recognition
+author: Markus Ganter
+date: 5/19, 2015
+output: MLpredictionAssignment.html
 ---
 
 #Human Activity Recognition
@@ -78,8 +76,8 @@ The result is a 99.3% prediction accuracy.
 
 Use the model to predict the classifications of the 20 test cases in the test data loaded above. 
 
-# predict the classes of the test set
 ```
+# predict the classes of the test set
 predictTest <- predict(model, data_test_cleaned)
 ```
 
