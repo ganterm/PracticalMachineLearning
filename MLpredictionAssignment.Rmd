@@ -24,7 +24,7 @@ data_test <- read.csv("./sourcedata/pml-testing.csv", na.strings= c("NA",""," ")
 
 #Data preprocessing 
 
-remove NAs and identifier columns
+Remove NAs and identifier columns
 
 ``` 
 # training data
